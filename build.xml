@@ -1,17 +1,44 @@
 <project name="algorithm-EGO" default="test" basedir=".">
 
-    <property name="algorithm.name" value="EGO" />
-    <property name="install.dir" value="${basedir}/FunzR-${algorithm.name}" />
+    <!--property name="algorithm.name" value="EGO" /-->
+    <property name="install.dir" value="${basedir}/FunzR-EGO" />
 
     <property name="funz.release" value="v1.9" />
 
     <property name="build_algorithm.xml" location="../funz-profile/build_algorithm.xml" />
     <import file="${build_algorithm.xml}"/>
 	
-    <target name="dist" depends="dist-algorithm"/> <!-- dist-ioplugin: copy just the plugin ascii files -->
+    <target name="dist" depends="dist-algorithm"/> <!-- dist-doe: copy just the algorithm ascii files -->
 	        
-    <target name="test" depends="test-algorithm"/> <!-- test-ioplugin: test the plugin ascii files -->
-    
+    <target name="test">
+        <fileset id="does" dir="${doe.dir}" includes="*.R"/>
+        <pathconvert pathsep="," property="does.list" refid="does">
+            <map from="${doe.dir}/" to=""/>
+        </pathconvert>
+        
+        <for list="${does.list}" param="doe" delimiter=",">
+            <sequential>
+                <property name="@{doe}" value="@{doe}"/>
+                <script language="javascript">
+                    arr = project.getProperty('@{doe}');
+                    project.setProperty('@{doe}.name', arr.replace('.R',''));
+                </script>
+                
+                <delete dir="${test.cases.dir}" />
+                <mkdir dir="${test.cases.dir}" />
+                <copy todir="${test.cases.dir}" failonerror="false">
+                    <fileset dir="${test.cases.dir}.${@{doe}.name}">
+                        <include name="**" />
+                    </fileset>
+                </copy>
+
+                <antcall target="test-algorithm">
+                    <param name="algorithm.name" value="${@{doe}.name}"/>
+                </antcall>
+            </sequential>
+        </for>
+    </target>    
+
     <target name="super.install" depends="install"/>
     <target name="super.clean" depends="clean"/>
 

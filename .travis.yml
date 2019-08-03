@@ -31,7 +31,7 @@ before_script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update -qq; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install r-recommended pandoc --allow-unauthenticated -y; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install pandoc; fi
-  - mkdir lib; R -e "install.packages(c('devtools','usethis'),repos = 'http://cran.us.r-project.org',lib='libR')"
+  - mkdir libR; R -e "install.packages(c('devtools','usethis'),repos = 'http://cran.us.r-project.org',lib='libR')"
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then rm -f '/usr/local/include/c++'; brew install ant; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install ant -y; fi
   

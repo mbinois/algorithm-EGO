@@ -19,7 +19,7 @@ ECEGO <- function(options) {
     ego = new.env()
     ego$i = 0
 
-    ega$search_ymin <- as.logical(options$search_ymin)
+    ego$search_ymin <- as.logical(options$search_ymin)
     ego$initBatchSize <- as.integer(options$initBatchSize)
     ego$batchSize <- as.integer(options$batchSize)
     ego$iterations <- as.integer(options$iterations)

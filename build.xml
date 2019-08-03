@@ -1,0 +1,18 @@
+<project name="algorithm-MyAlgorithm" default="test" basedir=".">
+
+    <property name="algorithm.name" value="MyAlgorithm" />
+    <property name="install.dir" value="${basedir}/FunzR-${algorithm.name}" />
+
+    <property name="funz.release" value="v1.9" />
+
+    <property name="build_algorithm.xml" location="../funz-profile/build_algorithm.xml" />
+    <import file="${build_algorithm.xml}"/>
+	
+    <target name="dist" depends="dist-algorithm"/> <!-- dist-ioplugin: copy just the plugin ascii files -->
+	        
+    <target name="test" depends="test-algorithm"/> <!-- test-ioplugin: test the plugin ascii files -->
+    
+    <target name="super.install" depends="install"/>
+    <target name="super.clean" depends="clean"/>
+
+</project>

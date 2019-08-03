@@ -1,0 +1,59 @@
+language: java
+matrix:
+  include:
+    - name: "Linux JDK8"
+      os: linux
+      dist: trusty
+      jdk:
+        - openjdk8
+      env:
+        - TRAVIS_DIST_NAME="trusty"
+    - name: "MacOS JDK8"
+      os: osx
+      osx_image: xcode9.3
+#    - name: "Windows" --- Not yet supported
+#      os: windows
+#      jdk:
+#        - openjdk8
+
+install:
+  - WD=$PWD
+  - cd ..
+  - git clone https://github.com/Funz/funz-profile
+  - cd $WD
+
+before_script:
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then rm -f '/usr/local/include/c++'; brew install r libxml2; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9; fi
+  - if [[ "$TRAVIS_DIST_NAME" == "trusty" ]]; then echo "deb https://cloud.r-project.org/bin/linux/ubuntu trusty-cran35/" | sudo tee -a /etc/apt/sources.list; fi
+  - if [[ "$TRAVIS_DIST_NAME" == "xenial" ]]; then echo "deb https://cloud.r-project.org/bin/linux/ubuntu xenial/" | sudo tee -a /etc/apt/sources.list; fi
+  - if [[ "$TRAVIS_DIST_NAME" == "trusty" ]]; then sudo add-apt-repository -s -y ppa:marutter/c2d4u; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update -qq; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install r-recommended pandoc --allow-unauthenticated -y; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install pandoc; fi
+  - mkdir lib; R -e "install.packages(c('devtools','usethis'),repos = 'http://cran.us.r-project.org',lib='lib')"
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then rm -f '/usr/local/include/c++'; brew install ant; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install ant -y; fi
+  
+script: 
+  - ant test
+
+before_deploy:
+  - ant clean dist
+  - cd dist; zip -r ../algorithm-MyAlgorithm.zip *; cd ..
+  - ant install
+  - zip -r FunzR-MyAlgorithm.zip FunzR-MyAlgorithm
+  
+deploy:
+  provider: releases
+  api_key:
+    secure: __PUT_YOUR_GITHUB_ACCESS_KEY_HERE__:_'travis_setup_releases_--force'_will_generate_a_correct_.travis.yml
+  file_glob: true
+  file:
+    - FunzR-*.zip
+    - algorithm-*.zip
+  on:
+    tags: true
+    branch: master
+  skip_cleanup: true
+  overwrite: true

@@ -40,14 +40,14 @@ script:
 
 before_deploy:
   - ant clean dist
-  - cd dist; zip -r ../algorithm-MyAlgorithm.zip *; cd ..
+  - cd dist; zip -r ../algorithm-EGO.zip *; cd ..
   - ant install
-  - zip -r FunzR-MyAlgorithm.zip FunzR-MyAlgorithm
+  - zip -r FunzR-EGO.zip FunzR-EGO
   
 deploy:
   provider: releases
   api_key:
-    secure: __PUT_YOUR_GITHUB_ACCESS_KEY_HERE__:_'travis_setup_releases_--force'_will_generate_a_correct_.travis.yml
+    secure: Q8pCDx6WQVEYdXJSpXI/AHYCdVnLTzLNPGNvXHPAIgxMVmWz8DCRhkFVtQ0VaSDDZq+6f+xcW9L5EE2vDxln+HbZ2Y5If1trxrb489Vamb3bQFCjlKYbwchcqAEgjXWi3Upghq3KHG2GyeySZ+/4LtYRhyy1jPg5nP0YRKznf3DWZfkA6dy+VQIhmxZ7yJ9FCFxCsHiakfl6gm20OLQKEb2YJd0rHxosXEe0olUg5D2iaTmIqX1UiPxacGwd/Yddqk/Aiv8kWlt5/Fyb8/B/eH8kqa/azc8QYt6d+Kpk+KJ3vT7hIW/SaRoup1gGYOEcxPr/fTvNCFtDVTSVJ6H5fL9Mhn/BkJ8Do1vGFMKyGd6kSxk/JtjrrHII64+lPKzBEuTGlnhqGZtJqh1hUyBryvDwX1Lbg9hCAFG3qTOCnZ20qoJU2Kb2iN/9NCwAIOyk+cnMClEfcOzQh4x1NL0loASz9cDcxf/hX4Aj7VqPLn+GeOtEhhT3P1cvThfS3HiHui3W7J8SYI+OVyS3/N0QfLIdRsIxZiDE30D4ssBHuWdZ7bAHQPA0uQDS8g/ceeDX8iVy4WXS5lTynacYJRYDOQm2YRubGHJXeJXl/UzSgGawHepVgUookoiEBpTWOcPwRgUH5jFa2dBmoZiBzwFkfZwhy87WS1lbkjpnT9A1rK0=
   file_glob: true
   file:
     - FunzR-*.zip

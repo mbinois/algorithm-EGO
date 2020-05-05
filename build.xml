@@ -3,7 +3,7 @@
     <!--property name="algorithm.name" value="EGO" /-->
     <property name="install.dir" value="${basedir}/FunzR-EGO" />
 
-    <property name="funz.release" value="v1.9" />
+    <property name="funz.release" value="v1.10" />
 
     <property name="build_algorithm.xml" location="../funz-profile/build_algorithm.xml" />
     <import file="${build_algorithm.xml}"/>

@@ -6,8 +6,8 @@
 # [print.f] : method to print/plot the function for information
 
 f <- function(x) {
-	x1 <- x[,1]*15-5   
-	x2 <- x[,2]*15     
+	x1 <- x[,1]*15-5
+	x2 <- x[,2]*15
 	y = matrix((x2 - 5/(4*pi^2)*(x1^2) + 5/pi*x1 - 6)^2 + 10*(1 - 1/(8*pi))*cos(x1) + 10,ncol=1)
     y_constr = matrix((x[,1] - 0.5427730) * (x[,2] - 0.15), ncol=1)
     cbind(y,y_constr)
@@ -28,7 +28,8 @@ test_that("f(armgin.f) == f.min",{expect_equal(f(matrix(argmin.f,nrow=1))[1,1],m
 test_that("f_constr(armgin.f) == 0",{expect_equal(f(matrix(argmin.f,nrow=1))[1,2],0,tolerance = .0001)})
 
 test = function(algorithm_file) {
-    results = run.algorithm(algorithm_file, options=NULL,fun=list(input=input.f,output=output.f))
+    results = run.algorithm(algorithm_file, options = list(nugget='0.1', nugget_constr='0.1'),
+                            algorithm = ECEGO(options),fun=list(input=input.f,output=output.f))
     test_that("branin constr min",{expect_equal(as.numeric(results$min),min.f,tolerance = .1)})
     test_that("branin constr argmin",{expect_equal(sum((jsonlite::fromJSON(results$argmin)-argmin.f)^2),0,tolerance = .01)})
 }

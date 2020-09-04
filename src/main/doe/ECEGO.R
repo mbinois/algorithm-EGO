@@ -139,7 +139,7 @@ getNextDesign <- function(algorithm, X, Y) {
                            nugget.estim = algorithm$nuggetestim_constr,nugget = algorithm$nugget_constr,
                            scaling = TRUE, knots = all_knots))
   else
-    try(model <- km(algorithm$trend_constr, optim.method = "BFGS",
+    try(model_constr <- km(algorithm$trend_constr, optim.method = "BFGS",
                     covtype = algorithm$covtype_constr,
                     design = X, response = y_constr,
                     lower = pmax(1e-06, dX[which.max(dy_constr/rowSums(dX)),]),

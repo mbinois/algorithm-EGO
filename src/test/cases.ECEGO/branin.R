@@ -31,6 +31,6 @@ test = function(algorithm_file) {
     results = run.algorithm(algorithm_file, options = list(nugget='0.1', nugget_constr='0.1'),fun=list(input=input.f,output=output.f))
 	print(results)
     test_that("branin constr min",{expect_equal(as.numeric(results$min),min.f,tolerance = .1)})
-    test_that("branin constr argmin",{expect_equal(sum((jsonlite::fromJSON(results$argmin)-argmin.f)^2),0,tolerance = .01)})
+    test_that("branin constr argmin",{expect_equal(sum((as.numeric(results$argmin)-argmin.f)^2),0,tolerance = .01)})
 }
 

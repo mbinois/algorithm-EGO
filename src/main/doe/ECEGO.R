@@ -391,7 +391,7 @@ max_EITSEE <-function(model, model.constr, lower, upper, control=NULL) {
   pars <- #rbind(pars,
     as.matrix(apply(mesh,1,function(t)colMeans(model@X[t,,drop=FALSE]))) #)
   if (ncol(pars)!=ncol(model@X)) pars = t(pars)
-  ei <- EI(pars, model)
+  ei <- EITSEE(pars, model)
   good_start <- which(ei > 0.1*max(ei, na.rm = T))
   par0 <- pars[good_start,,drop=FALSE] #matrix(pars[good_start[sample(1:length(good_start), 1)], ], nrow = 1)
   o <- optims(par0,function(x) -EITSEE(x, model, model.constr),
@@ -478,35 +478,35 @@ max_qEITSEE <- function(npoints, model, model.constr, lower, upper, L, L.constr,
 }
 
 ########################################## EXAMPLE ##############################################
-# f <- function(X) matrix(apply(X,1,function (x) {
-#   x1 <- x[1]*15-5
-#   x2 <- x[2]*15
-#   y = matrix((x2 - 5/(4*pi^2)*(x1^2) + 5/pi*x1 - 6)^2 + 10*(1 - 1/(8*pi))*cos(x1) + 10,ncol=1)
-#   y_constr = (x[1] - 0.5427730) * (x[2] - 0.15)
-#   cbind(y,y_constr)
-# }),ncol=2)
-# 
-# options = list(initBatchSize='8', batchSize='8', iterations='10', initBatchBounds='true', trend='y~1', covtype='matern3_2', knots='2', liar='upper95', nugget='0.1', seed='1', trend_constr='y~1', covtype_constr='matern3_2', nugget_constr='0.1', liar_constr='upper95' )
-# algorithm = ECEGO(options)
-# 
-# X0 = getInitialDesign(algorithm, input=list(x1=list(min=0,max=1),x2=list(min=0,max=1)), NULL)
-# Y0 = f(X0)
-# # X0 = getInitialDesign(gd, input=list(x2=list(min=0,max=1)), NULL)
-# # Y0 = f1(X0)
-# Xi = X0
-# Yi = Y0
-# 
-# finished = FALSE
-# while (!finished) {
-#   print(displayResultsTmp(algorithm,Xi,Yi))
-#   Xj = getNextDesign(algorithm,Xi,Yi)
-#   if (is.null(Xj) | length(Xj) == 0) {
-#     finished = TRUE
-#   } else {
-#     Yj = f(Xj)
-#     Xi = rbind(Xi,Xj)
-#     Yi = rbind(Yi,Yj)
-#   }
-# }
-# 
-# print(displayResults(algorithm,Xi,Yi))
+f <- function(X) matrix(apply(X,1,function (x) {
+  x1 <- x[1]*15-5
+  x2 <- x[2]*15
+  y = matrix((x2 - 5/(4*pi^2)*(x1^2) + 5/pi*x1 - 6)^2 + 10*(1 - 1/(8*pi))*cos(x1) + 10,ncol=1)
+  y_constr = (x[1] - 0.5427730) * (x[2] - 0.15)
+  cbind(y,y_constr)
+}),ncol=2)
+
+options = list(initBatchSize='8', batchSize='8', iterations='10', initBatchBounds='true', trend='y~1', covtype='matern3_2', knots='2', liar='upper95', nugget='0.1', seed='1', trend_constr='y~1', covtype_constr='matern3_2', nugget_constr='0.1', liar_constr='upper95' )
+algorithm = ECEGO(options)
+
+X0 = getInitialDesign(algorithm, input=list(x1=list(min=0,max=1),x2=list(min=0,max=1)), NULL)
+Y0 = f(X0)
+# X0 = getInitialDesign(gd, input=list(x2=list(min=0,max=1)), NULL)
+# Y0 = f1(X0)
+Xi = X0
+Yi = Y0
+
+finished = FALSE
+while (!finished) {
+  print(displayResultsTmp(algorithm,Xi,Yi))
+  Xj = getNextDesign(algorithm,Xi,Yi)
+  if (is.null(Xj) | length(Xj) == 0) {
+    finished = TRUE
+  } else {
+    Yj = f(Xj)
+    Xi = rbind(Xi,Xj)
+    Yi = rbind(Yi,Yj)
+  }
+}
+
+print(displayResults(algorithm,Xi,Yi))

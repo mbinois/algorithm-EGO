@@ -172,18 +172,25 @@ displayResults <- function(algorithm, X, Y) {
   algorithm$files <- paste("ECEGO_view_", algorithm$i,".png", sep = "")
   resolution <- 600
 
-  if (dim(Y)[2] == 2) {
-    noise.var <- as.array(Y[, 2])^2
+  if (dim(Y)[2] > 2) {
+    noise.var <- as.array(Y[,2])^2 
     yname = paste0("N(", colnames(Y)[1], ",", colnames(Y)[2],")")
+    y_constr = Y[,3]
+    y_constrname = colnames(Y)[3]
   } else {
     noise.var <- NULL
-    yname = colnames(Y)
+    yname = colnames(Y)[1]
+    y_constr = matrix(Y[,2],ncol=1)
+    y_constrname = colnames(Y)[2]
   }
-
   y = Y[, 1]
-  m = min(Y[, 1])
-  x = as.matrix(X)[which(Y[, 1] == m), ]
-  html = paste0("<HTML>minimum is ", format(m,digits=6),
+
+  yy = y * abs(y_constr)
+  m.ix = which(yy == min(yy))
+  m = y[m.ix]
+  x = as.matrix(X)[m.ix, ]
+  html = paste0("<HTML>minimum is ", yname," = ",format(y[m.ix],digits=6),
+                " for ",y_constrname," = ",format(y_constr[m.ix],digits=6),"<br/>",
                 " found at <br/>",
                 paste0(collapse = "<br/>",paste(sep = "= ", colnames(X), format(x,digits=3))),
                 "<br/><img src='", algorithm$files,

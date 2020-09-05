@@ -391,7 +391,7 @@ max_EITSEE <-function(model, model.constr, lower, upper, control=NULL) {
   pars <- #rbind(pars,
     as.matrix(apply(mesh,1,function(t)colMeans(model@X[t,,drop=FALSE]))) #)
   if (ncol(pars)!=ncol(model@X)) pars = t(pars)
-  ei <- EITSEE(pars, model)
+  ei <- EITSEE(pars, model, model.constr)
   good_start <- which(ei > 0.1*max(ei, na.rm = T))
   par0 <- pars[good_start,,drop=FALSE] #matrix(pars[good_start[sample(1:length(good_start), 1)], ], nrow = 1)
   o <- optims(par0,function(x) -EITSEE(x, model, model.constr),

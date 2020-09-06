@@ -3,14 +3,14 @@ matrix:
   include:
     - name: "Linux JDK8"
       os: linux
-      dist: trusty
+      dist: xenial
       jdk:
         - openjdk8
       env:
         - TRAVIS_DIST_NAME="trusty"
     - name: "MacOS JDK8"
       os: osx
-      osx_image: xcode9.3
+      osx_image: xcode10.1
 #    - name: "Windows" --- Not yet supported
 #      os: windows
 #      jdk:
@@ -25,10 +25,7 @@ install:
 before_script:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export HOMEBREW_NO_AUTO_UPDATE=1; rm -f '/usr/local/include/c++'; brew install r libxml2; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" < /dev/null 2> /dev/null ; brew install caskroom/cask/brew-cask 2> /dev/null; ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" < /dev/null 2> /dev/null ; brew cask install xquartz; fi
-  #- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9; fi
-  - if [[ "$TRAVIS_DIST_NAME" == "trusty" ]]; then echo "deb https://cloud.r-project.org/bin/linux/ubuntu trusty-cran35/" | sudo tee -a /etc/apt/sources.list; fi
-  #- if [[ "$TRAVIS_DIST_NAME" == "xenial" ]]; then echo "deb https://cloud.r-project.org/bin/linux/ubuntu xenial/" | sudo tee -a /etc/apt/sources.list; fi
-  - if [[ "$TRAVIS_DIST_NAME" == "trusty" ]]; then sudo add-apt-repository -s -y ppa:marutter/c2d4u; fi
+  - if [[ "$TRAVIS_DIST_NAME" == "xenial" ]]; then echo "deb https://cloud.r-project.org/bin/linux/ubuntu xenial-cran35/" | sudo tee -a /etc/apt/sources.list; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update -qq; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install r-recommended pandoc --allow-unauthenticated -y; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install pandoc; fi

@@ -37,7 +37,7 @@ before_script:
     echo "deb https://cloud.r-project.org/bin/linux/ubuntu xenial-cran35/" | sudo tee -a /etc/apt/sources.list;
     sudo apt-get update -qq;
     sudo apt-get install libglu1-mesa-dev libfreetype6-dev libmagick++-dev;
-    sudo apt-get install r-recommended r-cran-rgl pandoc --allow-unauthenticated -y;
+    sudo apt-get install r-recommended pandoc --allow-unauthenticated -y;
     sudo apt-get install ant -y;
     fi
   - mkdir libR; R -e "install.packages(c('devtools','usethis'),repos = 'http://cran.us.r-project.org',lib='libR')"

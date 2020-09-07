@@ -6,8 +6,6 @@ matrix:
       dist: xenial
       jdk:
         - openjdk8
-      env:
-        - TRAVIS_DIST_NAME="trusty"
     - name: "MacOS JDK8"
       os: osx
       osx_image: xcode10.1
@@ -23,16 +21,24 @@ install:
   - cd $WD
 
 before_script:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export HOMEBREW_NO_AUTO_UPDATE=1; rm -f '/usr/local/include/c++'; brew install r libxml2; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
-  ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" < /dev/null 2> /dev/null ; brew install caskroom/cask/brew-cask 2> /dev/null; brew cask install xquartz; fi
-  - if [[ "$TRAVIS_DIST_NAME" == "xenial" ]]; then echo "deb https://cloud.r-project.org/bin/linux/ubuntu xenial-cran35/" | sudo tee -a /etc/apt/sources.list; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update -qq; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install r-recommended r-cran-rgl pandoc --allow-unauthenticated -y; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install pandoc; fi
+  - > if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
+      export HOMEBREW_NO_AUTO_UPDATE=1; 
+      rm -f '/usr/local/include/c++'; 
+      brew install r libxml2; 
+      ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" < /dev/null 2> /dev/null;
+      brew install caskroom/cask/brew-cask 2> /dev/null;
+      brew cask install xquartz;
+      brew install pandoc;
+      brew install ant;
+      fi
+  - > if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
+      echo "deb https://cloud.r-project.org/bin/linux/ubuntu xenial-cran35/" | sudo tee -a /etc/apt/sources.list;
+      sudo apt-get update -qq;
+      sudo apt-get install libglu1-mesa-dev libfreetype6-dev libmagick++-dev;
+      sudo apt-get install r-recommended r-cran-rgl pandoc --allow-unauthenticated -y;
+      sudo apt-get install ant -y;
+      fi
   - mkdir libR; R -e "install.packages(c('devtools','usethis'),repos = 'http://cran.us.r-project.org',lib='libR')"
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then rm -f '/usr/local/include/c++'; brew install ant; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install ant -y; fi
   
 script: 
   - ant test

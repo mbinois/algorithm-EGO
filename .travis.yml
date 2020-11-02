@@ -1,18 +1,49 @@
-language: java
+language: minimal
+cache:
+  directories:
+    - $HOME/.jabba/
+
 matrix:
   include:
     - name: "Linux JDK8"
       os: linux
       dist: xenial
-      jdk:
-        - openjdk8
-    - name: "MacOS JDK8"
+      env:
+        - JDK="adopt@1.8"
+    - name: "Linux JDK11"
+      os: linux
+      dist: xenial
+      env:
+        - JDK="openjdk@1.11"
+    - name: "Linux JDK13"
+      os: linux
+      dist: xenial
+      env:
+        - JDK="openjdk@1.13"
+# Vary OS        
+    - name: "MacOS JDK11"
       os: osx
       osx_image: xcode10.1
-#    - name: "Windows" --- Not yet supported
-#      os: windows
-#      jdk:
-#        - openjdk8
+      env:
+        - JDK="openjdk@1.11"
+    - name: "Windows JDK11"
+      os: windows
+      env:
+        - JDK="openjdk@1.11"
+
+env:
+  global:
+    # Convenience variables for shortening commands
+    - GRAVIS_REPO="https://github.com/DanySK/Gravis-CI.git"
+    - GRAVIS="$HOME/gravis" 
+    
+before_install:
+  # Check out the script set
+  - travis_retry git clone --depth 1 $GRAVIS_REPO $GRAVIS
+  - source $GRAVIS/install-jdk
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export HOMEBREW_NO_AUTO_UPDATE=1; brew update; brew install ant; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install ant -y; fi
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then choco install ant -y; fi
 
 install:
   - WD=$PWD
@@ -21,27 +52,43 @@ install:
   - cd $WD
 
 before_script:
-  - > 
-    if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
-    export HOMEBREW_NO_AUTO_UPDATE=1; 
-    rm -f '/usr/local/include/c++'; 
-    brew install r libxml2; 
-    ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" < /dev/null 2> /dev/null;
-    brew install caskroom/cask/brew-cask 2> /dev/null;
-    brew cask install xquartz;
-    brew install pandoc;
-    brew install ant;
-    fi
-  - > 
+  - >  
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
     echo "deb https://cloud.r-project.org/bin/linux/ubuntu xenial-cran35/" | sudo tee -a /etc/apt/sources.list;
-    sudo apt-get update -qq;
-    sudo apt-get install libglu1-mesa-dev libfreetype6-dev libmagick++-dev;
-    sudo apt-get install r-recommended pandoc --allow-unauthenticated -y;
-    sudo apt-get install ant -y;
+    sudo apt-get update -qq --allow-unauthenticated; 
+    sudo apt-get install r-recommended pandoc --allow-unauthenticated -y; 
+    sudo apt-get install libglu1-mesa-dev libglu1-mesa-dev libfreetype6-dev libmagick++-dev --allow-unauthenticated -y; 
+    fi
+  - >
+    if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
+    if [ ! -d "/usr/local/Cellar/r/3.6.3_2" ]; then 
+    wd=$PWD;
+    cd /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core; git reset --hard c3a244c627e; git checkout -b r-3.6.3;
+    cd $wd;
+    brew reinstall r;
+    fi;
+    export PATH=$PATH:/usr/local/Cellar/r/3.6.3_2/bin;
+    echo "" >> ~/.bashrc; echo "export PATH=$PATH:/usr/local/Cellar/r/3.6.3_2/bin;" >> ~/.bashrc;
+    brew install pandoc;
+    brew cask install xquartz;
+    fi
+  - >
+    if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
+    echo "ls C:/Program Files/R/R-3.6.0/bin:"; ls "C:/Program Files/R/R-3.6.0/bin";
+    echo "ls /c/Program Files/R/R-3.6.0/bin:"; ls "/c/Program Files/R/R-3.6.0/bin";
+    if [ ! -d "/c/Program Files/R/R-3.6.0/bin" ]; then 
+    travis_wait choco install r --version 3.6 -y;
+    tail -100 /c/ProgramData/chocolatey/logs/chocolatey.log;
+    fi;
+    echo "ls /c/Program Files/R/R-3.6.0/bin:"; ls "/c/Program Files/R/R-3.6.0/bin";
+    export PATH=$PATH:"/c/Program Files/R/R-3.6.0/bin";
+    echo "PATH/bash:"$PATH;
+    echo "PATH/cmd:"`cmd.exe //C 'echo %PATH%'`;
+    cmd.exe //C "R --version";
+    choco install pandoc;
     fi
   - mkdir libR; R -e "install.packages(c('devtools','usethis'),repos = 'http://cran.us.r-project.org',lib='libR')"
-  
+ 
 script: 
   - ant test
 

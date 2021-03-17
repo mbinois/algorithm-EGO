@@ -1,0 +1,84 @@
+name: Java CI
+
+on:
+  push:
+    branches: [ master ]
+    tags: [ 'v*.*' ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+        java: [ 8 ]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-java@v1
+      with:
+        java-version: ${{ matrix.java }}
+        java-package: jdk
+    - uses: r-lib/actions/setup-r@v1
+      with:
+        r-version: 3.6
+    - if: matrix.os == 'macos-latest'
+      run: ln -s /Library/Frameworks/R.framework/Versions/3.6 /Library/Frameworks/R.framework/Versions/3.5
+    - uses: r-lib/actions/setup-pandoc@v1
+    - run: |
+        WD=$PWD
+        cd ..
+        git clone https://github.com/Funz/funz-profile
+        cd $WD
+      shell: bash
+    - if: matrix.os == 'ubuntu-latest'
+      run: sudo apt-get -y install libharfbuzz-dev libfribidi-dev libcurl4-openssl-dev
+    - run: ant -noinput -buildfile build.xml test
+      id: anttest
+      continue-on-error: true
+    - if: steps.anttest.outcome != 'success'
+      uses: actions/upload-artifact@v2
+      with:
+        name: artifacts-${{ matrix.os }}-${{ matrix.java }}
+        path: |
+          *.txt
+          *.log
+          *.out
+          *.Rout
+          *.Rmd
+          *.md
+          *.html
+    - if: steps.anttest.outcome != 'success'
+      run: exit 1
+
+  release:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-java@v1
+      with:
+        java-version: 1.8
+        java-package: jdk
+    - run: |
+        WD=$PWD
+        cd ..
+        git clone https://github.com/Funz/funz-profile
+        cd $WD
+    - run: |
+        ant clean dist
+        cd dist; zip -r ../algorithm-EGO.zip *; cd ..
+        ant install
+        zip -r FunzR-EGO.zip FunzR-EGO
+    - uses: actions/upload-artifact@v2
+      with:
+        path: dist
+    - uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      with:
+        files: ./*-EGO.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+        
+        

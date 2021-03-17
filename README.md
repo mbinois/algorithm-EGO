@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/Funz/algorithm-EGO.png)](https://travis-ci.org/Funz/algorithm-EGO)
+[![.github/workflows/ant.yml](https://github.com/Funz/algorithm-EGO/actions/workflows/ant.yml/badge.svg)](https://github.com/Funz/algorithm-EGO/actions/workflows/ant.yml)
 
 # Funz algorithm: EGO
 

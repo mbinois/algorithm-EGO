@@ -392,3 +392,64 @@ dist2 = function(X,Y)
 # plotParetoEmp(PFref, lty = 3)
 # plotParetoEmp(PF0, lty = 3, col = "grey")
 
+# ## Test with 3objs  
+# f <- function(X) t(apply(X,1, function (x){
+#   nobj <- 3
+#   if(is.null(dim(x))){
+#     x <- matrix(x, 1) 
+#   }
+#   n <- ncol(x)
+#   
+#   y <- matrix(x[,1:(nobj-1)], nrow(x))
+#   z <- matrix(x[,nobj:n], nrow(x))
+#   
+#   g <- rowSums((z-0.5)^2)
+#   
+#   #   tmp <- c(rev(cumprod(cos(y * pi/2))), 1)
+#   #   tmp2 <- c(1, rev(sin(y * pi/2)))
+#   tmp <- t(apply(cos(y * pi/2), 1, cumprod))
+#   tmp <- cbind(t(apply(tmp, 1, rev)), 1)
+#   
+#   tmp2 <- cbind(1, t(apply(sin(y * pi/2), 1, rev)))
+#   
+#   f <- tmp * tmp2 * (1 + g)
+#   
+# }))
+# ngrid <- 5e3
+# Xgrid <- matrix(runif(4 * ngrid), ngrid)
+# Ygrid <- f(Xgrid)
+# PFref <- t(nondominated_points(t(Ygrid)))
+# 
+# ## Default version: 2objs, noiseless, one design per turn 
+# 
+# options = list(initBatchSize='40', batchSize='4', iterations='5', initBatchBounds='true', trend='y~1', covtype='matern3_2', knots='2', liar='upper95', nugget='true', seed='1', refPoint=c(2,2,2))
+# algorithm = GPO(options)
+# 
+# X0 = getInitialDesign(algorithm, input=list(x1=list(min=0,max=1),x2=list(min=0,max=1),x3=list(min=0,max=1),x4=list(min=0,max=1)), NULL)
+# Y0 = f(X0)
+# 
+# Xi = X0
+# Yi = Y0
+# 
+# finished = FALSE
+# while (!finished) {
+#   # print(displayResultsTmp(algorithm,Xi,Yi))
+#   Xj = getNextDesign(algorithm,Xi,Yi)
+#   if (is.null(Xj) | length(Xj) == 0) {
+#     finished = TRUE
+#   } else {
+#     Yj = f(Xj)
+#     Xi = rbind(Xi,Xj)
+#     Yi = rbind(Yi,Yj)
+#   }
+# }
+# 
+# idsPF <- !is_dominated(t(Yi))
+# cols <- rep(3, length(idsPF))
+# cols[!idsPF] <- 2
+# library(rgl)
+# plot3d(Yi, col = cols, size = 5)
+# points3d(PFref)
+# 
+# pairs(Xi, col = cols, pch = 20)
+
